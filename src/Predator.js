@@ -26,13 +26,31 @@ export function Predator(props) {
       dispose={null}>
       <group scale={0.22}>
         <mesh geometry={nodes.Object_6.geometry}>
-          <PredatorCloakMaterial originalMaterial={materials.cabeza} gridWidth={40} gridHeight={40} hover={hover} />
+          <PredatorCloakMaterial
+            materialName="PredatorCloak-Head"
+            originalMaterial={materials.cabeza}
+            gridWidth={40}
+            gridHeight={40}
+            hover={hover}
+          />
         </mesh>
         <mesh geometry={nodes.Object_8.geometry}>
-          <PredatorCloakMaterial originalMaterial={materials.cuerpo} gridWidth={60} gridHeight={65} hover={hover} />
+          <PredatorCloakMaterial
+            materialName="PredatorCloak-Body"
+            originalMaterial={materials.cuerpo}
+            gridWidth={60}
+            gridHeight={65}
+            hover={hover}
+          />
         </mesh>
         <mesh geometry={nodes.Object_10.geometry}>
-          <PredatorCloakMaterial originalMaterial={materials.casco} gridWidth={20} gridHeight={20} hover={hover} />
+          <PredatorCloakMaterial
+            materialName="PredatorCloak-Helmet"
+            originalMaterial={materials.casco}
+            gridWidth={20}
+            gridHeight={20}
+            hover={hover}
+          />
         </mesh>
       </group>
     </group>

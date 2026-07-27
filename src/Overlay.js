@@ -1,18 +1,47 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { cloakSettings } from './cloakSettings'
+import { inspectorSettings } from './inspectorSettings'
 
 export default function Overlay() {
   const audioRef = useRef(null)
   const [soundOn, setSoundOn] = useState(true)
-
-  const handleMouseDown = () => {
-    window.document.body.style.cursor = 'grabbing'
-  }
-
-  const handleMouseUp = () => {
-    window.document.body.style.cursor = 'grab'
-  }
+  const [cloakPinned, setCloakPinned] = useState(false)
+  const [inspectorVisible, setInspectorVisible] = useState(false)
+  const isDev = import.meta.env.DEV
 
   useEffect(() => {
+    const syncCloakPin = () => {
+      setCloakPinned((prev) =>
+        prev === cloakSettings.forceCloak ? prev : cloakSettings.forceCloak,
+      )
+    }
+
+    const id = window.setInterval(syncCloakPin, 200)
+    return () => window.clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    if (!isDev) return
+
+    const syncInspector = () => {
+      setInspectorVisible((prev) =>
+        prev === inspectorSettings.visible ? prev : inspectorSettings.visible,
+      )
+    }
+
+    const id = window.setInterval(syncInspector, 200)
+    return () => window.clearInterval(id)
+  }, [isDev])
+
+  useEffect(() => {
+    const handleMouseDown = () => {
+      window.document.body.style.cursor = 'grabbing'
+    }
+
+    const handleMouseUp = () => {
+      window.document.body.style.cursor = 'grab'
+    }
+
     window.addEventListener('mousedown', handleMouseDown)
     window.addEventListener('mouseup', handleMouseUp)
     return () => {
@@ -63,20 +92,49 @@ export default function Overlay() {
     }
   }
 
+  const toggleCloakPin = () => {
+    cloakSettings.toggleCloak()
+    setCloakPinned(cloakSettings.forceCloak)
+  }
+
+  const toggleInspector = () => {
+    inspectorSettings.toggle()
+    setInspectorVisible(inspectorSettings.visible)
+  }
+
   return (
     <div className="container">
-      <header>
+      <header className="site-header">
         <h3
           onClick={() => {
             window.open('https://andersonmancini.dev', 'tab')
           }}>
           ANDERSONMANCINI.DEV
         </h3>
+      </header>
 
-        <div className="header-actions">
+      <div className="bottom-bar">
+        <div className="bottom-bar-copy">
+          <h1>Predator Cloak Material</h1>
+          <span className="bottom-bar-badge">React Three Fiber</span>
+          <p className="bottom-bar-hint">
+            {cloakPinned ? 'Cloak pinned — orbit to record' : 'Hover to morph'} — Created by
+            Anderson Mancini.
+          </p>
+        </div>
+
+        <div className="bottom-bar-actions">
+          <button className="ctaButton contact soundToggle" onClick={toggleCloakPin} type="button">
+            {cloakPinned ? 'CLOAK PINNED' : 'PIN CLOAK'}
+          </button>
           <button className="ctaButton contact soundToggle" onClick={toggleSound} type="button">
             {soundOn ? 'SOUND ON' : 'SOUND OFF'}
           </button>
+          {isDev && (
+            <button className="ctaButton contact soundToggle" onClick={toggleInspector} type="button">
+              {inspectorVisible ? 'HIDE INSPECTOR' : 'SHOW INSPECTOR'}
+            </button>
+          )}
           <button
             className="ctaButton contact"
             onClick={() => {
@@ -85,11 +143,7 @@ export default function Overlay() {
             GET IN TOUCH
           </button>
         </div>
-      </header>
-      <section className="overlay">
-        <h1>Predator Cloak Material for React Three Fiber</h1>
-      </section>
-      <footer>Hover to morph - Created by Anderson Mancini.</footer>
+      </div>
     </div>
   )
 }

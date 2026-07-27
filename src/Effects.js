@@ -1,40 +1,43 @@
-import React from 'react'
-import {
-  EffectComposer,
-  Vignette,
-  Bloom,
-  HueSaturation,
-  Autofocus
-} from '@react-three/postprocessing'
-import { Environment } from '@react-three/drei'
+import { useMemo } from "react";
+import { useThree, useFrame } from "@react-three/fiber";
+import * as THREE from "three/webgpu";
+import { pass, uv, float, Fn } from "three/tsl";
+import { bloom } from "three/addons/tsl/display/BloomNode.js";
 
 export default function Effects() {
+  const { scene, camera, gl } = useThree();
+
+  const renderPipeline = useMemo(() => {
+    const scenePass = pass(scene, camera);
+    const sceneColor = scenePass.getTextureNode("output");
+
+    const bloomPass = bloom(sceneColor, 0.4, 0.7, 0.67);
+    let composite = sceneColor.add(bloomPass);
+
+    const vignette = Fn(() => {
+      const dist = uv().sub(0.5).length();
+      return float(1.0).sub(dist.mul(1.35)).clamp(0.55, 1.0);
+    });
+    composite = composite.mul(vignette());
+
+    const pipeline = new THREE.RenderPipeline(gl);
+    pipeline.outputNode = composite;
+
+    return pipeline;
+  }, [scene, camera, gl]);
+
+  useFrame(() => {
+    renderPipeline.render();
+  }, 1);
+
   return (
-    <>
-      <EffectComposer disableNormalPass multisampling={0}>
-        <Bloom
-          luminanceThreshold={0.67}
-          radius={0.7}
-          levels={5}
-          intensity={0.8}
-          mipmapBlur
-        />
-        <Autofocus target={[-0.05, 1.35, 0]} bokehScale={20} smoothTime={0.4} />
-        <Vignette offset={0.8} darkness={0.45} />
-        <HueSaturation hue={0.1} saturation={0.4} />
-      </EffectComposer>
-      <directionalLight
-        shadow-mapSize={1024}
-        shadow-bias={-0.001}
-        shadow-normalBias={0.03}
-        castShadow
-        position={[-25, 1, 30]}
-        intensity={6}
-      />
-      <Environment
-        ground={{ height: 15, radius: 590, scale: 50 }}
-        files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/rainforest_trail_1k.hdr"
-      />
-    </>
-  )
+    <directionalLight
+      shadow-mapSize={1024}
+      shadow-bias={-0.001}
+      shadow-normalBias={0.03}
+      castShadow
+      position={[-25, 1, 30]}
+      intensity={6}
+    />
+  );
 }
