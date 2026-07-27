@@ -5,7 +5,7 @@ export const glassSettings = {
   thickness: 2.4,
   transmission: 1,
   envMapIntensity: 1.8,
-  fresnelIntensity: 0.88,
+  fresnelIntensity: 0.55,
   fresnelColor: '#f2f7ff',
 
   roughness: 0.3,

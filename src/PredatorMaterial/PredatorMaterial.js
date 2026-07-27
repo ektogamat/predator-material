@@ -70,9 +70,7 @@ function buildGridMask({
       .mul(uProgress)
       .abs();
     return float(
-      abs(finalPos.x.add(uCellOffset))
-        .add(abs(finalPos.y))
-        .lessThan(size),
+      abs(finalPos.x.add(uCellOffset)).add(abs(finalPos.y)).lessThan(size),
     );
   });
 
@@ -102,7 +100,9 @@ function buildGridMask({
   return Fn(() => {
     const uvMask = uvGridMask();
     const isUv = uProjection.lessThan(0.5);
-    const isObject = uProjection.greaterThan(0.5).and(uProjection.lessThan(1.5));
+    const isObject = uProjection
+      .greaterThan(0.5)
+      .and(uProjection.lessThan(1.5));
     const isWorld = uProjection.greaterThan(1.5).and(uProjection.lessThan(2.5));
 
     return select(
@@ -209,11 +209,7 @@ export default function PredatorCloakMaterial({
       uAxisScaleZ,
     });
 
-    material.colorNode = mix(
-      materialColor,
-      vec4(uCellColor, 1.0),
-      gridMask,
-    );
+    material.colorNode = mix(materialColor, vec4(uCellColor, 1.0), gridMask);
 
     material.roughnessNode = mix(
       materialRoughness,
@@ -232,13 +228,9 @@ export default function PredatorCloakMaterial({
       ),
       gridMask,
     );
-    material.metalnessNode = mix(
-      materialMetalness,
-      uMetalnessInCell,
-      gridMask,
-    );
+    material.metalnessNode = mix(materialMetalness, uMetalnessInCell, gridMask);
 
-    const fresnelMask = smoothstep(0.85, 1.0, uProgress);
+    const fresnelMask = smoothstep(0.4, 0.85, uProgress);
     const viewDir = cameraPosition.sub(positionWorld).normalize();
     const NdotV = clamp(dot(normalWorld, viewDir), 0, 1);
     const fresnel = pow(float(1).sub(NdotV), 4).mul(fresnelMask);

@@ -9,7 +9,7 @@ import { inspectorSettings } from "./inspectorSettings";
 
 const HDR_URL = "/hdri/rainforest_trail_2k.hdr";
 
-export const App = ({ position = [0, 1.3, 0.9], fov = 35 }) => (
+export const App = ({ position = [0.3, 1.3, 0.9], fov = 35 }) => (
   <Canvas
     shadows
     dpr={1}
@@ -45,7 +45,7 @@ export const App = ({ position = [0, 1.3, 0.9], fov = 35 }) => (
         background
         files={HDR_URL}
         backgroundBlurriness={0.03}
-        backgroundIntensity={0.4}
+        backgroundIntensity={0.7}
         resolution={2048}
         environmentIntensity={0.95}
         backgroundRotation={[0, -0.3, 0]}
