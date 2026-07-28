@@ -1,11 +1,11 @@
 // Tweaked live in dev via Inspector → Parameters → Glass, or `__glassSettings` in the console.
 export const glassSettings = {
-  dispersion: 12,
+  dispersion: 4.1,
   ior: 1.16,
-  thickness: 2.4,
+  thickness: 1.6,
   transmission: 1,
   envMapIntensity: 1.8,
-  fresnelIntensity: 0.55,
+  fresnelIntensity: 0.2,
   fresnelColor: '#f2f7ff',
 
   roughness: 0.3,
