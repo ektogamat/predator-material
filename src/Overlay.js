@@ -129,12 +129,22 @@ export default function Overlay() {
   return (
     <div className={`container ${hideChrome ? 'is-model-focused' : ''}`}>
       <header className="site-header ui-chrome">
-        <h3
-          onClick={() => {
-            window.open('https://andersonmancini.dev', 'tab')
-          }}>
-          ANDERSONMANCINI.DEV
-        </h3>
+        <div className="header-actions">
+          <h3
+            onClick={() => {
+              window.open('https://andersonmancini.dev', 'tab')
+            }}>
+            ANDERSONMANCINI.DEV
+          </h3>
+          <button
+            className="ctaButton contact"
+            onClick={() => {
+              window.open('https://andersonmancini.dev', 'tab')
+            }}
+            type="button">
+            GET IN TOUCH
+          </button>
+        </div>
       </header>
 
       <div
@@ -156,8 +166,7 @@ export default function Overlay() {
           <h1>Predator Cloak Material</h1>
           <span className="bottom-bar-badge">React Three Fiber</span>
           <p className="bottom-bar-hint">
-            {cloakPinned ? 'Cloak pinned — orbit to record' : 'Hover to morph'} — Created by
-            Anderson Mancini.
+            {cloakPinned ? 'Cloak pinned — orbit to record' : 'Hover to morph'}
           </p>
         </div>
 
@@ -168,20 +177,17 @@ export default function Overlay() {
           <button className="ctaButton contact soundToggle" onClick={toggleSound} type="button">
             {soundOn ? 'SOUND ON' : 'SOUND OFF'}
           </button>
-          {isDev && (
-            <button className="ctaButton contact soundToggle" onClick={toggleInspector} type="button">
-              {inspectorVisible ? 'HIDE INSPECTOR' : 'SHOW INSPECTOR'}
-            </button>
-          )}
-          <button
-            className="ctaButton contact"
-            onClick={() => {
-              window.open('https://andersonmancini.dev', 'tab')
-            }}>
-            GET IN TOUCH
-          </button>
         </div>
       </div>
+
+      {isDev && (
+        <button
+          className="ctaButton contact soundToggle inspector-toggle ui-chrome"
+          onClick={toggleInspector}
+          type="button">
+          {inspectorVisible ? 'HIDE INSPECTOR' : 'SHOW INSPECTOR'}
+        </button>
+      )}
     </div>
   )
 }

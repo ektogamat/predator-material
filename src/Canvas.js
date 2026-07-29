@@ -89,7 +89,7 @@ export const App = ({ position = [0.3, 1.3, 0.9], fov = 35 }) => (
         background
         files={HDR_URL}
         backgroundBlurriness={0.03}
-        backgroundIntensity={0.3}
+        backgroundIntensity={1.5}
         environmentIntensity={0.95}
         backgroundRotation={[0, -0.3, 0]}
       />

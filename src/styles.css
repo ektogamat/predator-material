@@ -217,7 +217,8 @@ body {
 }
 
 .bottom-bar-copy h1 {
-  font-size: clamp(1.4rem, 2.6vw, 2.4rem);
+  flex-basis: 100%;
+  font-size: clamp(1.85rem, 3.4vw, 3.1rem);
   letter-spacing: -0.5px;
   line-height: 1;
   color: rgba(255, 255, 255, 0.82);
@@ -244,6 +245,18 @@ body {
   font-family: 'Rubik', sans-serif;
   font-size: 0.72rem;
   color: rgba(247, 247, 247, 0.42);
+}
+
+.inspector-toggle {
+  position: absolute;
+  bottom: max(64px, calc(48px + env(safe-area-inset-bottom)));
+  right: max(56px, env(safe-area-inset-right));
+  z-index: 11;
+  pointer-events: all;
+}
+
+.container.is-model-focused .inspector-toggle {
+  transform: translateY(18px);
 }
 
 .bottom-bar-actions {
@@ -469,11 +482,16 @@ a {
   }
 
   .bottom-bar-copy h1 {
-    font-size: 1.35rem;
+    font-size: 1.65rem;
   }
 
   .bottom-bar-actions {
     justify-content: flex-start;
+  }
+
+  .inspector-toggle {
+    bottom: max(48px, calc(32px + env(safe-area-inset-bottom)));
+    right: max(28px, env(safe-area-inset-right));
   }
 
   .support {
