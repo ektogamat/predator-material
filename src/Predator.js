@@ -40,15 +40,28 @@ export function Predator(props) {
     }
   }, [])
 
+  const syncCloak = () => {
+    setCloakActive(hoverSettings.hovered || hoverSettings.holding)
+  }
+
   useEffect(() => {
-    const clearHold = () => {
-      hoverSettings.setHolding(false)
-      setCloakActive(false)
+    const startHold = (event) => {
+      if (event.button !== undefined && event.button !== 0) return
+      if (event.target?.closest?.('button, a, .ui-chrome')) return
+      hoverSettings.setHolding(true)
+      syncCloak()
     }
 
+    const clearHold = () => {
+      hoverSettings.setHolding(false)
+      syncCloak()
+    }
+
+    window.addEventListener('pointerdown', startHold)
     window.addEventListener('pointerup', clearHold)
     window.addEventListener('pointercancel', clearHold)
     return () => {
+      window.removeEventListener('pointerdown', startHold)
       window.removeEventListener('pointerup', clearHold)
       window.removeEventListener('pointercancel', clearHold)
     }
@@ -107,23 +120,15 @@ export function Predator(props) {
         onPointerOver={(event) => {
           event.stopPropagation()
           hoverSettings.setHovered(true)
+          syncCloak()
           document.body.style.cursor = 'pointer'
           playHoverSound()
         }}
         onPointerOut={() => {
           hoverSettings.setHovered(false)
-          hoverSettings.setHolding(false)
-          setCloakActive(false)
+          syncCloak()
           document.body.style.cursor = 'grab'
           stopHoverSound()
-        }}
-        onPointerDown={() => {
-          hoverSettings.setHolding(true)
-          setCloakActive(true)
-        }}
-        onPointerUp={() => {
-          hoverSettings.setHolding(false)
-          setCloakActive(false)
         }}>
         <sphereGeometry args={[1, 16, 16]} />
       </mesh>
