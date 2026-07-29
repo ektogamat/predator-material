@@ -4,7 +4,7 @@ import { hoverSettings } from './hoverSettings'
 import { inspectorSettings } from './inspectorSettings'
 import YautjaText, { STAGGER_MS } from './YautjaText'
 
-const YAUTJA_MESSAGE = 'CLICK FOR INVISIBILY'
+const YAUTJA_MESSAGE = 'HOLD FOR CLOAk'
 const YAUTJA_STEPS = YAUTJA_MESSAGE.length
 const TRANSLATION_DELAY_MS = YAUTJA_STEPS * STAGGER_MS + 180
 
