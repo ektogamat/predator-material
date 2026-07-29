@@ -6,53 +6,127 @@ Source: https://sketchfab.com/3d-models/predator-s-3921d70ad5dd45d1861a1cdd9c49a
 Title: Predator S
 */
 
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useGLTF } from '@react-three/drei'
+import * as THREE from 'three/webgpu'
 import PredatorCloakMaterial from './PredatorMaterial/PredatorMaterial'
+import { hoverSettings } from './hoverSettings'
+
+const noRaycast = () => null
+const HOVER_SOUND_URL = '/freesound_community-predator-40909.mp3'
 
 export function Predator(props) {
   const { nodes, materials } = useGLTF('/predator_s-transformed.glb')
-  const [hover, sethover] = useState(false)
+  const [cloakActive, setCloakActive] = useState(false)
+  const hoverAudioRef = useRef(null)
+  const hitMaterial = useMemo(() => {
+    const material = new THREE.MeshBasicNodeMaterial()
+    material.transparent = true
+    material.opacity = 0
+    material.depthWrite = false
+    return material
+  }, [])
+
+  useEffect(() => {
+    const audio = new Audio(HOVER_SOUND_URL)
+    audio.volume = 0.6
+    audio.preload = 'auto'
+    hoverAudioRef.current = audio
+
+    return () => {
+      audio.pause()
+      audio.src = ''
+      hoverAudioRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    const clearHold = () => {
+      hoverSettings.setHolding(false)
+      setCloakActive(false)
+    }
+
+    window.addEventListener('pointerup', clearHold)
+    window.addEventListener('pointercancel', clearHold)
+    return () => {
+      window.removeEventListener('pointerup', clearHold)
+      window.removeEventListener('pointercancel', clearHold)
+    }
+  }, [])
+
+  const playHoverSound = () => {
+    const audio = hoverAudioRef.current
+    if (!audio) return
+    audio.currentTime = 0
+    audio.play().catch(() => {})
+  }
+
+  const stopHoverSound = () => {
+    const audio = hoverAudioRef.current
+    if (!audio) return
+    audio.pause()
+    audio.currentTime = 0
+  }
 
   return (
-    <group
-      onPointerEnter={() => {
-        sethover(true)
-      }}
-      onPointerLeave={() => {
-        sethover(false)
-      }}
-      {...props}
-      dispose={null}>
+    <group {...props} dispose={null}>
       <group scale={0.22}>
-        <mesh geometry={nodes.Object_6.geometry}>
+        <mesh geometry={nodes.Object_6.geometry} raycast={noRaycast}>
           <PredatorCloakMaterial
             materialName="PredatorCloak-Head"
             originalMaterial={materials.cabeza}
             gridWidth={40}
             gridHeight={40}
-            hover={hover}
+            hover={cloakActive}
           />
         </mesh>
-        <mesh geometry={nodes.Object_8.geometry}>
+        <mesh geometry={nodes.Object_8.geometry} raycast={noRaycast}>
           <PredatorCloakMaterial
             materialName="PredatorCloak-Body"
             originalMaterial={materials.cuerpo}
             gridWidth={60}
             gridHeight={65}
-            hover={hover}
+            hover={cloakActive}
           />
         </mesh>
-        <mesh geometry={nodes.Object_10.geometry}>
+        <mesh geometry={nodes.Object_10.geometry} raycast={noRaycast}>
           <PredatorCloakMaterial
             materialName="PredatorCloak-Helmet"
             originalMaterial={materials.casco}
             gridWidth={20}
             gridHeight={20}
-            hover={hover}
+            hover={cloakActive}
           />
         </mesh>
       </group>
+
+      <mesh
+        position={[0, 1.2, 0]}
+        scale={[0.4, 1.1, 0.4]}
+        material={hitMaterial}
+        onPointerOver={(event) => {
+          event.stopPropagation()
+          hoverSettings.setHovered(true)
+          document.body.style.cursor = 'pointer'
+          playHoverSound()
+        }}
+        onPointerOut={() => {
+          hoverSettings.setHovered(false)
+          hoverSettings.setHolding(false)
+          setCloakActive(false)
+          document.body.style.cursor = 'grab'
+          stopHoverSound()
+        }}
+        onPointerDown={() => {
+          hoverSettings.setHolding(true)
+          setCloakActive(true)
+        }}
+        onPointerUp={() => {
+          hoverSettings.setHolding(false)
+          setCloakActive(false)
+        }}>
+        <sphereGeometry args={[1, 16, 16]} />
+      </mesh>
     </group>
   )
 }

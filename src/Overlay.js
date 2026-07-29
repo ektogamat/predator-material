@@ -1,13 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { cloakSettings } from './cloakSettings'
+import { hoverSettings } from './hoverSettings'
 import { inspectorSettings } from './inspectorSettings'
+import YautjaText, { STAGGER_MS } from './YautjaText'
+
+const YAUTJA_MESSAGE = 'CLICK FOR INVISIBILY'
+const YAUTJA_STEPS = YAUTJA_MESSAGE.length
+const TRANSLATION_DELAY_MS = YAUTJA_STEPS * STAGGER_MS + 180
 
 export default function Overlay() {
   const audioRef = useRef(null)
   const [soundOn, setSoundOn] = useState(true)
   const [cloakPinned, setCloakPinned] = useState(false)
+  const [modelHovered, setModelHovered] = useState(false)
+  const [modelHolding, setModelHolding] = useState(false)
   const [inspectorVisible, setInspectorVisible] = useState(false)
   const isDev = import.meta.env.DEV
+  const showYautjaHint = modelHovered && !modelHolding
+  const hideChrome = modelHovered
 
   useEffect(() => {
     const syncCloakPin = () => {
@@ -17,6 +27,20 @@ export default function Overlay() {
     }
 
     const id = window.setInterval(syncCloakPin, 200)
+    return () => window.clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    const syncHover = () => {
+      setModelHovered((prev) =>
+        prev === hoverSettings.hovered ? prev : hoverSettings.hovered,
+      )
+      setModelHolding((prev) =>
+        prev === hoverSettings.holding ? prev : hoverSettings.holding,
+      )
+    }
+
+    const id = window.setInterval(syncHover, 50)
     return () => window.clearInterval(id)
   }, [])
 
@@ -53,7 +77,7 @@ export default function Overlay() {
   useEffect(() => {
     const audio = new Audio('/predator-theme.mp3')
     audio.loop = true
-    audio.volume = 0.45
+    audio.volume = 0.25
     audioRef.current = audio
 
     const tryPlay = () => {
@@ -103,8 +127,8 @@ export default function Overlay() {
   }
 
   return (
-    <div className="container">
-      <header className="site-header">
+    <div className={`container ${hideChrome ? 'is-model-focused' : ''}`}>
+      <header className="site-header ui-chrome">
         <h3
           onClick={() => {
             window.open('https://andersonmancini.dev', 'tab')
@@ -113,7 +137,21 @@ export default function Overlay() {
         </h3>
       </header>
 
-      <div className="bottom-bar">
+      <div
+        className={`yautja-hud ${showYautjaHint ? 'is-visible' : ''}`}
+        aria-hidden={!showYautjaHint}>
+        <div className="yautja-hud-panel">
+          <YautjaText text={YAUTJA_MESSAGE} active={showYautjaHint} />
+          <p
+            key={showYautjaHint ? 'translation-on' : 'translation-off'}
+            className="yautja-translation"
+            style={{ animationDelay: `${TRANSLATION_DELAY_MS}ms` }}>
+            {YAUTJA_MESSAGE}
+          </p>
+        </div>
+      </div>
+
+      <div className="bottom-bar ui-chrome">
         <div className="bottom-bar-copy">
           <h1>Predator Cloak Material</h1>
           <span className="bottom-bar-badge">React Three Fiber</span>

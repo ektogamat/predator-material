@@ -56,7 +56,7 @@ function CameraSway({ azimuth = 0.45, polar = 0.22, damp = 0.3 }) {
 export const App = ({ position = [0.3, 1.3, 0.9], fov = 35 }) => (
   <Canvas
     shadows
-    dpr={1}
+    dpr={1.5}
     camera={{ position, fov }}
     eventSource={document.getElementById("root")}
     eventPrefix="client"
@@ -89,8 +89,7 @@ export const App = ({ position = [0.3, 1.3, 0.9], fov = 35 }) => (
         background
         files={HDR_URL}
         backgroundBlurriness={0.03}
-        backgroundIntensity={0.7}
-        resolution={2048}
+        backgroundIntensity={0.3}
         environmentIntensity={0.95}
         backgroundRotation={[0, -0.3, 0]}
       />
@@ -102,7 +101,8 @@ export const App = ({ position = [0.3, 1.3, 0.9], fov = 35 }) => (
       minDistance={0.5}
       maxDistance={4}
       target={[-0.05, 1.35, 0]}
-      maxPolarAngle={Math.PI / 1.8}
+      maxPolarAngle={Math.PI / 1.5}
+      minPolarAngle={Math.PI / 2.0}
       onStart={() => {
         orbitDragging.current = true;
       }}
